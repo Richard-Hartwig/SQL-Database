@@ -1,0 +1,417 @@
+Enter password: *********
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 8
+Server version: 5.6.23-enterprise-commercial-advanced-log MySQL Enterprise Serve
+r - Advanced Edition (Commercial)
+
+Copyright (c) 2000, 2015, Oracle and/or its affiliates. All rights reserved.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| chinook            |
+| majormarina        |
+| mysql              |
+| performance_schema |
+| sakila             |
+| test               |
+| world              |
++--------------------+
+8 rows in set (0.00 sec)
+
+mysql> use majormarina;
+Database changed
+mysql> show tables;
++-----------------------+
+| Tables_in_majormarina |
++-----------------------+
+| openrepairs           |
+| service               |
++-----------------------+
+2 rows in set (0.00 sec)
+
+mysql> describe service;
++---------------------+-----------+------+-----+---------+-------+
+| Field               | Type      | Null | Key | Default | Extra |
++---------------------+-----------+------+-----+---------+-------+
+| CategoryNumber      | char(2)   | NO   | PRI | NULL    |       |
+| CategoryDescription | char(50)  | YES  |     | NULL    |       |
+| Manager             | char(200) | YES  |     | NULL    |       |
++---------------------+-----------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+mysql> describe openrepairs;
++-----------------+---------------+------+-----+---------+-------+
+| Field           | Type          | Null | Key | Default | Extra |
++-----------------+---------------+------+-----+---------+-------+
+| Location        | char(4)       | NO   | PRI | NULL    |       |
+| MarinaNumber    | char(4)       | YES  |     | NULL    |       |
+| CategoryNumber  | char(2)       | YES  | MUL | NULL    |       |
+| Description     | char(50)      | YES  |     | NULL    |       |
+| TotalHours      | int(11)       | YES  |     | NULL    |       |
+| HoursSpent      | int(11)       | YES  |     | NULL    |       |
+| NextServiceDate | date          | YES  |     | NULL    |       |
+| FEE             | decimal(10,0) | YES  |     | NULL    |       |
++-----------------+---------------+------+-----+---------+-------+
+8 rows in set (0.00 sec)
+
+
+(  1   )    
+mysql> select * from OpenRepairs WHERE HoursSpent BETWEEN 0 AND 3;
++----------+--------------+----------------+------------------------------------
++------------+------------+-----------------+------+
+| Location | MarinaNumber | CategoryNumber | Description
+| TotalHours | HoursSpent | NextServiceDate | FEE  |
++----------+--------------+----------------+------------------------------------
++------------+------------+-----------------+------+
+| A237     | AD57         | 4              | Fuse on port motor blown
+|          1 |          0 | 2015-09-23      |    0 |
+| B178     | FB96         | 5              | Install new GPS
+|          4 |          1 | 2015-09-24      |  200 |
+| B211     | FB96         | 3              | Owner hit dock
+|          9 |          3 | 2015-09-23      | 2153 |
+| B451     | AD57         | 6              | Air Conditioner Periodically stops
+|          5 |          3 | 2015-09-23      |  300 |
+| K357     | BL72         | 2              | Engine oil dropping
+|          3 |          0 | 2015-09-23      |    0 |
+| L403     | BL72         | 1              | Oil Change
+|          2 |          0 | 2015-09-24      |    0 |
++----------+--------------+----------------+------------------------------------
++------------+------------+-----------------+------+
+6 rows in set (0.00 sec)
+
+(	2	)
+
+mysql> select CategoryNumber, FEE, Description FROM OpenRepairs WHERE FEE<250.00
+;
++----------------+------+------------------------------------+
+| CategoryNumber | FEE  | Description                        |
++----------------+------+------------------------------------+
+| 4              |    0 | Fuse on port motor blown           |
+| 5              |  200 | Install new GPS                    |
+| 6              |  100 | Air conditioner periodically stops |
+| 2              |    0 | Engine oil dropping                |
+| 1              |    0 | Oil Change                         |
++----------------+------+------------------------------------+
+5 rows in set (0.00 sec)
+
+(	3	)
+mysql> SELECT CategoryNumber, TotalHours,HoursSpent FROM OpenRepairs WHERE Total
+Hours <=3 AND HoursSpent=0;
++----------------+------------+------------+
+| CategoryNumber | TotalHours | HoursSpent |
++----------------+------------+------------+
+| 4              |          1 |          0 |
+| 2              |          3 |          0 |
+| 1              |          2 |          0 |
++----------------+------------+------------+
+3 rows in set (0.00 sec)
+
+(	4	)
+mysql> select MarinaNumber, NextServiceDate from OpenRepairs WHERE NextServiceDa
+te ="2015-09-23";
++--------------+-----------------+
+| MarinaNumber | NextServiceDate |
++--------------+-----------------+
+| AD57         | 2015-09-23      |
+| FB96         | 2015-09-23      |
+| AD57         | 2015-09-23      |
+| BL72         | 2015-09-23      |
++--------------+-----------------+
+4 rows in set (0.00 sec)
+
+(	5	)
+mysql> select MarinaNumber, Location,CategoryDescription, TotalHours  from OpenR
+epairs inner join Service ON OpenRepairs.CategoryNumber=Service.CategoryNumber;
++--------------+----------+---------------------+------------+
+| MarinaNumber | Location | CategoryDescription | TotalHours |
++--------------+----------+---------------------+------------+
+| BL72         | L403     | Routine engine      |          2 |
+| EL25         | A216     | Engine Repair       |          8 |
+| BL72         | K357     | Engine Repair       |          3 |
+| FB96         | B211     | Fiberglass Repair   |          9 |
+| AD57         | A237     | Electrical          |          1 |
+| FB96         | B178     | Electrical Systems  |          4 |
+| AD57         | B451     | Air Conditioning    |          5 |
+| FB96         | D513     | Air Conditioning    |          2 |
++--------------+----------+---------------------+------------+
+8 rows in set (0.00 sec)
+
+(	6	)	
+mysql> select CategoryDescription, TotalHours,HoursSpent from OpenRepairs INNER
+JOIN Service ON OpenRepairs.CategoryNumber=Service.CategoryNumber WHERE MarinaNu
+mber="AD57" OR MarinaNumber="BL72";
++---------------------+------------+------------+
+| CategoryDescription | TotalHours | HoursSpent |
++---------------------+------------+------------+
+| Routine engine      |          2 |          0 |
+| Engine Repair       |          3 |          0 |
+| Electrical          |          1 |          0 |
+| Air Conditioning    |          5 |          3 |
++---------------------+------------+------------+
+4 rows in set (0.00 sec)
+
+(	7	)
+mysql> Select MarinaNumber, Location, CategoryDescription from Service INNER JOI
+N OpenRepairs ON OpenRepairs.CategoryNumber=Service.CategoryNumber WHERE Service
+.CategoryNumber ="3";
++--------------+----------+---------------------+
+| MarinaNumber | Location | CategoryDescription |
++--------------+----------+---------------------+
+| FB96         | B211     | Fiberglass Repair   |
++--------------+----------+---------------------+
+1 row in set (0.00 sec)
+
+(	8	)
+mysql> Select MarinaNumber, Location, CategoryDescription, SUM(TotalHours-HoursS
+pent) AS Projected from OpenRepairs INNER join Service on OpenRepairs.CategoryNu
+mber=Service.CategoryNumber;
++--------------+----------+---------------------+-----------+
+| MarinaNumber | Location | CategoryDescription | Projected |
++--------------+----------+---------------------+-----------+
+| BL72         | L403     | Routine engine      |        18 |
++--------------+----------+---------------------+-----------+
+1 row in set (0.00 sec)
+(	9	)
+mysql> select SUM(TotalHours) from OpenRepairs;
++-----------------+
+| SUM(TotalHours) |
++-----------------+
+|              34 |
++-----------------+
+(	10	)
+1 row in set (0.00 sec)
+
+mysql> select MarinaNumber,HoursSpent from openRepairs;
++--------------+------------+
+| MarinaNumber | HoursSpent |
++--------------+------------+
+| EL25         |          5 |
+| AD57         |          0 |
+| FB96         |          1 |
+| FB96         |          3 |
+| AD57         |          3 |
+| FB96         |          4 |
+| BL72         |          0 |
+| BL72         |          0 |
++--------------+------------+
+8 rows in set (0.00 sec)
+
+mysql> select MarinaNumber,HoursSpent, SUM(MarinaNumber+HoursSpent) AS SUM from
+openRepairs;
++--------------+------------+------+
+| MarinaNumber | HoursSpent | SUM  |
++--------------+------------+------+
+| EL25         |          5 |   16 |
++--------------+------------+------+
+1 row in set, 8 warnings (0.00 sec)
+
+(	11	)
+mysql> select CategoryDescription, AVG(TotalHours) from openrepairs join Service
+ on service.CategoryNumber=OpenRepairs.CategoryNumber;
++---------------------+-----------------+
+| CategoryDescription | AVG(TotalHours) |
++---------------------+-----------------+
+| Routine engine      |          4.2500 |
++---------------------+-----------------+
+1 row in set (0.00 sec)
+
+(	12	)
+
+
+mysql> select CategoryNumber, Description, TotalHours FROM openrepairs WHERE Tot
+alHours >=3 AND TotalHours<6;
++----------------+------------------------------------+------------+
+| CategoryNumber | Description                        | TotalHours |
++----------------+------------------------------------+------------+
+| 5              | Install new GPS                    |          4 |
+| 6              | Air Conditioner Periodically stops |          5 |
+| 2              | Engine oil dropping                |          3 |
++----------------+------------------------------------+------------+
+3 rows in set (0.00 sec)
+
+(	13	)
+mysql> SELECT CategoryNumber,Description, TotalHours from OpenRepairs WHERE Cate
+goryNumber =5 OR TotalHours >=3 AND TotalHours<5;
++----------------+------------------------------------+------------+
+| CategoryNumber | Description                        | TotalHours |
++----------------+------------------------------------+------------+
+| 5              | Install new GPS                    |          4 |
+| 2              | Engine oil dropping                |          3 |
++----------------+------------------------------------+------------+
+3 rows in set (0.00 sec)
+
+(	14	)
+mysql> select Location, MarinaNumber, Description from OpenRepairs WHERE MarinaN
+umber = 'AD57' OR Marinanumber = 'FB96';
++----------+--------------+------------------------------------+
+| Location | MarinaNumber | Description                        |
++----------+--------------+------------------------------------+
+| A237     | AD57         | Fuse on port motor blown           |
+| B178     | FB96         | Install new GPS                    |
+| B211     | FB96         | Owner hit dock                     |
+| B451     | AD57         | Air Conditioner Periodically stops |
+| D513     | FB96         | Air conditioner periodically stops |
++----------+--------------+------------------------------------+
+5 rows in set (0.00 sec)
+
+
+(	15	)
+mysql> SELECT Location, CategoryDescription, MarinaNumber, Description FROM Open
+Repairs join service on service.CategoryNumber=openrepairs.CategoryNumber;
++----------+---------------------+--------------+-------------------------------
+-----+
+| Location | CategoryDescription | MarinaNumber | Description
+     |
++----------+---------------------+--------------+-------------------------------
+-----+
+| L403     | Routine engine      | BL72         | Oil Change
+     |
+| A216     | Engine Repair       | EL25         | Leak near engine
+     |
+| K357     | Engine Repair       | BL72         | Engine oil dropping
+     |
+| B211     | Fiberglass Repair   | FB96         | Owner hit dock
+     |
+| A237     | Electrical          | AD57         | Fuse on port motor blown
+     |
+| B178     | Electrical Systems  | FB96         | Install new GPS
+     |
+| B451     | Air Conditioning    | AD57         | Air Conditioner Periodically s
+tops |
+| D513     | Air Conditioning    | FB96         | Air conditioner periodically s
+tops |
++----------+---------------------+--------------+-------------------------------
+-----+
+8 rows in set (0.00 sec)
+(	16	)
+mysql> SELECT Location, CategoryDescription, MarinaNumber, Description FROM Open
+Repairs join service on service.CategoryNumber=openrepairs.CategoryNumber WHERE
+Manager='Mark Alonso';
++----------+---------------------+--------------+--------------------------+
+| Location | CategoryDescription | MarinaNumber | Description              |
++----------+---------------------+--------------+--------------------------+
+| B211     | Fiberglass Repair   | FB96         | Owner hit dock           |
+| A237     | Electrical          | AD57         | Fuse on port motor blown |
++----------+---------------------+--------------+--------------------------+
+2 rows in set (0.00 sec)
+(	17	)
+mysql> SELECT Location, CategoryDescription, MarinaNumber, Description from Open
+repairs join Service ON service.categorynumber = openrepairs.categoryNumber WHER
+E NextServiceDate='2015-09-23';
++----------+---------------------+--------------+-------------------------------
+-----+
+| Location | CategoryDescription | MarinaNumber | Description
+     |
++----------+---------------------+--------------+-------------------------------
+-----+
+| K357     | Engine Repair       | BL72         | Engine oil dropping
+     |
+| B211     | Fiberglass Repair   | FB96         | Owner hit dock
+     |
+| A237     | Electrical          | AD57         | Fuse on port motor blown
+     |
+| B451     | Air Conditioning    | AD57         | Air Conditioner Periodically s
+tops |
++----------+---------------------+--------------+-------------------------------
+-----+
+4 rows in set (0.00 sec)
+(	18	)
+mysql> SELECT Description, MarinaNumber FROM openrepairs join service ON service
+.categorynumber=openrepairs.categoryNumber order by MarinaNumber Asc;
++------------------------------------+--------------+
+| Description                        | MarinaNumber |
++------------------------------------+--------------+
+| Fuse on port motor blown           | AD57         |
+| Air Conditioner Periodically stops | AD57         |
+| Oil Change                         | BL72         |
+| Engine oil dropping                | BL72         |
+| Leak near engine                   | EL25         |
+| Install new GPS                    | FB96         |
+| Air conditioner periodically stops | FB96         |
+| Owner hit dock                     | FB96         |
++------------------------------------+--------------+
+8 rows in set (0.00 sec)
+(	19	)
+mysql> SELECT HoursSpent, MarinaNumber FROM openrepairs GROUP BY MarinaNumber;
++------------+--------------+
+| HoursSpent | MarinaNumber |
++------------+--------------+
+|          0 | AD57         |
+|          0 | BL72         |
+|          5 | EL25         |
+|          1 | FB96         |
++------------+--------------+
+4 rows in set (0.00 sec)
+(	20	)
+mysql> SELECT MAX(HoursSpent) FROM openRepairs;
++-----------------+
+| MAX(HoursSpent) |
++-----------------+
+|               5 |
++-----------------+
+1 row in set (0.00 sec)
+(	21	)
+mysql> SELECT DISTINCT *  FROM openrepairs INNER JOIN Service ON service.categor
+ynumber= openrepairs.CategoryNumber;
++----------+--------------+----------------+------------------------------------
++------------+------------+-----------------+------+----------------+-----------
+----------+-------------+
+| Location | MarinaNumber | CategoryNumber | Description
+| TotalHours | HoursSpent | NextServiceDate | FEE  | CategoryNumber | CategoryDe
+scription | Manager     |
++----------+--------------+----------------+------------------------------------
++------------+------------+-----------------+------+----------------+-----------
+----------+-------------+
+| L403     | BL72         | 1              | Oil Change
+|          2 |          0 | 2015-09-24      |    0 | 1              | Routine en
+gine      | Doug Thomas |
+| A216     | EL25         | 2              | Leak near engine
+|          8 |          5 | 2015-09-25      |  450 | 2              | Engine Rep
+air       | Doug Thomas |
+| K357     | BL72         | 2              | Engine oil dropping
+|          3 |          0 | 2015-09-23      |    0 | 2              | Engine Rep
+air       | Doug Thomas |
+| B211     | FB96         | 3              | Owner hit dock
+|          9 |          3 | 2015-09-23      | 2153 | 3              | Fiberglass
+ Repair   | Mark Alonso |
+| A237     | AD57         | 4              | Fuse on port motor blown
+|          1 |          0 | 2015-09-23      |    0 | 4              | Electrical
+          | Mark Alonso |
+| B178     | FB96         | 5              | Install new GPS
+|          4 |          1 | 2015-09-24      |  200 | 5              | Electrical
+ Systems  | Susan Reid  |
+| B451     | AD57         | 6              | Air Conditioner Periodically stops
+|          5 |          3 | 2015-09-23      |  300 | 6              | Air Condit
+ioning    | Tyler Smith |
+| D513     | FB96         | 6              | Air conditioner periodically stops
+|          2 |          4 | NULL            |  100 | 6              | Air Condit
+ioning    | Tyler Smith |
++----------+--------------+----------------+------------------------------------
++------------+------------+-----------------+------+----------------+-----------
+----------+-------------+
+8 rows in set (0.00 sec)
+(	22	)
+mysql> SELECT Description, Manager  FROM openrepairs INNER JOIN Service ON servi
+ce.categorynumber= openrepairs.CategoryNumber ORDER BY manager asc;
++------------------------------------+-------------+
+| Description                        | Manager     |
++------------------------------------+-------------+
+| Oil Change                         | Doug Thomas |
+| Leak near engine                   | Doug Thomas |
+| Engine oil dropping                | Doug Thomas |
+| Owner hit dock                     | Mark Alonso |
+| Fuse on port motor blown           | Mark Alonso |
+| Install new GPS                    | Susan Reid  |
+| Air Conditioner Periodically stops | Tyler Smith |
+| Air conditioner periodically stops | Tyler Smith |
++------------------------------------+-------------+
+8 rows in set (0.00 sec)

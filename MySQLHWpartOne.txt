@@ -1,0 +1,240 @@
+Richard Hartwig 
+
+QUESTION 1
+Create Database majormarina;
+Query OK, 1 row affected (0.02 sec)
+QUESTION 2
+mysql> CREATE TABLE Service (CategoryNumber Char(2) NOT NULL,CategoryDescription CHAR(50), PRIMARY KEY(CategoryNumber));
+Query OK, 0 rows affected (0.06 sec)
+QUESTION 3
+Insert INTO Service VALUES(1,Routine engine),(2,Engine Repair),(3,Fiberglass Repair),(4,Electrical),(5,Electronic Systems),(6,Air Conditioning);
+Query OK, 0 rows affected (0.06 sec)
+
+QUESTION 4
+CREATE TABLE OpenRepairs (MarinaNumber CHAR(4) NOT NULL ,CategoryNumber CHAR(4),Description CHAR(50),TotalHours INT, HoursSpent INT,
+NextServiceDate DATE, Fee Decimal,PRIMARY KEY(MarinaNumber));
+Query OK, 0 rows affected (0.06 sec)
+
+mysql> INSERT INTO OpenRepairs VALUES("B451","AD57","6","Air Conditioner Periodi
+cally stops","5","3","2015-09-23","300.00"),("A237","AD57","4","Fuse on port motor blow
+n","1","0","2015-09-23","0.0"),("L403","BL72","1","Oil Change","2","0","20
+15-09-24","0.0"),("K357","BL72","2","Engine oil dropping","3", "0","2015-09-23","0.0"),
+("A216","EL25","2","Leak near engine","8","5","2015-09-25","450.0"),("B178","FB96","5","Install new GPS","4","1
+","2015-09-24","200.0"),("D513","FB96","6","Air conditioner periodically stops","2","2",NULL,"100.0");
+Query OK, 1 row affected (0.02 sec)
+
+
+mysql> INSERT INTO OpenRepairs VALUES("B211","FB96","3","Owner hit dock","9","3"
+,2015-09-23,"2153.00");
+ERROR 1292 (22007): Incorrect date value: '1983' for column 'NextServiceDate' at
+ row 1
+
+mysql> describe OpenRepairs;
++-----------------+---------------+------+-----+---------+-------+
+| Field           | Type          | Null | Key | Default | Extra |
++-----------------+---------------+------+-----+---------+-------+
+| Location        | char(4)       | NO   | PRI | NULL    |       |
+| MarinaNumber    | char(4)       | YES  |     | NULL    |       |
+| CategoryNumber  | char(2)       | YES  | MUL | NULL    |       |
+| Description     | char(50)      | YES  |     | NULL    |       |
+| TotalHours      | int(11)       | YES  |     | NULL    |       |
+| HoursSpent      | int(11)       | YES  |     | NULL    |       |
+| NextServiceDate | date          | YES  |     | NULL    |       |
+| FEE             | decimal(10,0) | YES  |     | NULL    |       |
++-----------------+---------------+------+-----+---------+-------+
+8 rows in set (0.00 sec)
+
+mysql> select * from OpenRepairs;
++----------+--------------+----------------+------------------------------------
++------------+------------+-----------------+------+
+| Location | MarinaNumber | CategoryNumber | Description
+| TotalHours | HoursSpent | NextServiceDate | FEE  |
++----------+--------------+----------------+------------------------------------
++------------+------------+-----------------+------+
+| A216     | EL25         | 2              | Leak near engine
+|          8 |          5 | 2015-09-25      |  450 |
+| A237     | AD57         | 4              | Fuse on port motor blown
+|          1 |          0 | 2015-09-23      |    0 |
+| B178     | FB96         | 5              | Install new GPS
+|          4 |          1 | 2015-09-24      |  200 |
+| B451     | AD57         | 6              | Air Conditioner Periodically stops
+|          5 |          3 | 2015-09-23      |  300 |
+| D513     | FB96         | 6              | Air conditioner periodically stops
+|          2 |          2 | NULL            |  100 |
+| K357     | BL72         | 2              | Engine oil dropping
+|          3 |          0 | 2015-09-23      |    0 |
+| L403     | BL72         | 1              | Oil Change
+|          2 |          0 | 2015-09-24      |    0 |
++----------+--------------+----------------+------------------------------------
++------------+------------+-----------------+------+
+7 rows in set (0.00 sec)
+
+mysql> select CategoryNumber from OpenRepairs;
++----------------+
+| CategoryNumber |
++----------------+
+| 1              |
+| 2              |
+| 2              |
+| 4              |
+| 5              |
+| 6              |
+| 6              |
++----------------+
+7 rows in set (0.00 sec)
+
+mysql> select CategoryNumber from Service;
++----------------+
+| CategoryNumber |
++----------------+
+| 1              |
+| 2              |
+| 3              |
+| 4              |
+| 5              |
+| 6              |
++----------------+
+6 rows in set (0.00 sec)
+
+mysql> UPDATE OpenRepairs SET HoursSpent="4" WHERE Location="D513";
+Query OK, 1 row affected (0.03 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> Question 8: The query was successful, affecting one row in the table Open
+Repairs
+
+mysql> ALTER TABLE Service ADD Manager CHAR;
+Query OK, 0 rows affected (0.45 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+
+mysql> describe Service;
++---------------------+----------+------+-----+---------+-------+
+| Field               | Type     | Null | Key | Default | Extra |
++---------------------+----------+------+-----+---------+-------+
+| CategoryNumber      | char(2)  | NO   | PRI | NULL    |       |
+| CategoryDescription | char(50) | YES  |     | NULL    |       |
+| Manager             | char(1)  | YES  |     | NULL    |       |
++---------------------+----------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+
+mysql> Alter table Service MODIFY Manager Char(200);
+Query OK, 6 rows affected (0.70 sec)
+Records: 6  Duplicates: 0  Warnings: 0
+
+mysql> describe Service;
++---------------------+-----------+------+-----+---------+-------+
+| Field               | Type      | Null | Key | Default | Extra |
++---------------------+-----------+------+-----+---------+-------+
+| CategoryNumber      | char(2)   | NO   | PRI | NULL    |       |
+| CategoryDescription | char(50)  | YES  |     | NULL    |       |
+| Manager             | char(200) | YES  |     | NULL    |       |
++---------------------+-----------+------+-----+---------+-------+
+3 rows in set (0.01 sec)
+
+mysql> UPDATE Service SET Manager="Doug Thomas" where CategoryNumber="1" OR "2";
+
+Query OK, 6 rows affected (0.05 sec)
+Rows matched: 6  Changed: 6  Warnings: 0
+
+mysql> select * from Service;
++----------------+---------------------+-------------+
+| CategoryNumber | CategoryDescription | Manager     |
++----------------+---------------------+-------------+
+| 1              | Routine engine      | Doug Thomas |
+| 2              | Engine Repair       | Doug Thomas |
+| 3              | Fiberglass Repair   | Doug Thomas |
+| 4              | Electrical          | Doug Thomas |
+| 5              | Electrical Systems  | Doug Thomas |
+| 6              | Air Conditioning    | Doug Thomas |
++----------------+---------------------+-------------+
+6 rows in set (0.00 sec)
+
+
+mysql> UPDATE Service SET Manager="Mark Alonso" where CategoryNumber="4" OR Cate
+goryNumber="3";
+Query OK, 2 rows affected (0.04 sec)
+Rows matched: 2  Changed: 2  Warnings: 0
+
+mysql> UPDATE Service SET Manager="Susan Reid" where CategoryNumber="5";
+Query OK, 1 row affected (0.04 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+QUESTION 10
+mysql> UPDATE Service SET Manager="Tyler Smith" where CategoryNumber="6";
+Query OK, 1 row affected (0.04 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+((QUESTION 11))
+
+mysql> select * from OpenRepairs;
++----------+--------------+----------------+------------------------------------
++------------+------------+-----------------+------+
+| Location | MarinaNumber | CategoryNumber | Description
+| TotalHours | HoursSpent | NextServiceDate | FEE  |
++----------+--------------+----------------+------------------------------------
++------------+------------+-----------------+------+
+| A216     | EL25         | 2              | Leak near engine
+|          8 |          5 | 2015-09-25      |  450 |
+| A237     | AD57         | 4              | Fuse on port motor blown
+|          1 |          0 | 2015-09-23      |    0 |
+| B178     | FB96         | 5              | Install new GPS
+|          4 |          1 | 2015-09-24      |  200 |
+| B451     | AD57         | 6              | Air Conditioner Periodically stops
+|          5 |          3 | 2015-09-23      |  300 |
+| D513     | FB96         | 6              | Air conditioner periodically stops
+|          2 |          4 | NULL            |  100 |
+| K357     | BL72         | 2              | Engine oil dropping
+|          3 |          0 | 2015-09-23      |    0 |
+| L403     | BL72         | 1              | Oil Change
+|          2 |          0 | 2015-09-24      |    0 |
++----------+--------------+----------------+------------------------------------
++------------+------------+-----------------+------+
+7 rows in set (0.00 sec)
+
+mysql> INSERT INTO OpenRepairs VALUES("B211","FB96","3","Owner hit dock","9","3"
+,"2015-09-23","2153.00");
+Query OK, 1 row affected (0.04 sec)
+
+mysql> select * from OpenRepairs;
++----------+--------------+----------------+------------------------------------
++------------+------------+-----------------+------+
+| Location | MarinaNumber | CategoryNumber | Description
+| TotalHours | HoursSpent | NextServiceDate | FEE  |
++----------+--------------+----------------+------------------------------------
++------------+------------+-----------------+------+
+| A216     | EL25         | 2              | Leak near engine
+|          8 |          5 | 2015-09-25      |  450 |
+| A237     | AD57         | 4              | Fuse on port motor blown
+|          1 |          0 | 2015-09-23      |    0 |
+| B178     | FB96         | 5              | Install new GPS
+|          4 |          1 | 2015-09-24      |  200 |
+| B211     | FB96         | 3              | Owner hit dock
+|          9 |          3 | 2015-09-23      | 2153 |
+| B451     | AD57         | 6              | Air Conditioner Periodically stops
+|          5 |          3 | 2015-09-23      |  300 |
+| D513     | FB96         | 6              | Air conditioner periodically stops
+|          2 |          4 | NULL            |  100 |
+| K357     | BL72         | 2              | Engine oil dropping
+|          3 |          0 | 2015-09-23      |    0 |
+| L403     | BL72         | 1              | Oil Change
+|          2 |          0 | 2015-09-24      |    0 |
++----------+--------------+----------------+------------------------------------
++------------+------------+-----------------+------+
+
+8 rows in set (0.00 sec)
+
+((QUESTION 12))
+
+mysql> select * from Service;
++----------------+---------------------+-------------+
+| CategoryNumber | CategoryDescription | Manager     |
++----------------+---------------------+-------------+
+| 1              | Routine engine      | Doug Thomas |
+| 2              | Engine Repair       | Doug Thomas |
+| 3              | Fiberglass Repair   | Mark Alonso |
+| 4              | Electrical          | Mark Alonso |
+| 5              | Electrical Systems  | Susan Reid  |
+| 6              | Air Conditioning    | Tyler Smith |
++----------------+---------------------+-------------+
+6 rows in set (0.00 sec)
